@@ -34,23 +34,23 @@ export default function App() {
   const [gameResult, setGameResult] = useState<any>(null);
 
   useEffect(() => {
-    // In production/preview, we need to be careful about the socket URL
-    // If APP_URL is defined, we might want to use it, but usually io() works if served from same origin.
-    // However, for robustness in some environments:
-    const newSocket = io({
-      transports: ['websocket', 'polling'],
-      reconnectionAttempts: 5,
+    // Use default connection settings which try polling first, then upgrade to websocket
+    // This is often more robust in proxy/firewall environments
+    const newSocket = io(window.location.origin, {
+      path: '/socket.io/',
+      transports: ['polling', 'websocket'],
     });
     setSocket(newSocket);
 
     newSocket.on('connect_error', (err) => {
       console.error('Socket connection error:', err);
-      setError('서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.');
+      // Don't show alert immediately, let it retry
+      // setError('서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.');
     });
 
     newSocket.on('connect', () => {
       console.log('Connected to server');
-      setError(null); // Clear connection errors
+      setError(null);
       // If we think we are in a room, check if it still exists on server
       // This handles server restarts where in-memory state is lost
       setRoomId((currentRoomId) => {
