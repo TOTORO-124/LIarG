@@ -1,0 +1,5 @@
+{
+  "name": "Liar Game",
+  "description": "A real-time multiplayer Liar Game where players try to identify the imposter.",
+  "requestFramePermissions": []
+}
